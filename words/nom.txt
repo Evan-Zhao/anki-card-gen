@@ -1,0 +1,265 @@
+bibliothèque
+bureau
+café
+chose
+différence
+faculté
+instrument
+librairie
+littérature
+lycée
+objet
+ordinateur
+problème
+sociologie
+table
+tableau
+télévision
+université
+acteur
+ami
+chanteur
+étudiant
+personne
+petit ami
+professeur
+cahier
+calculatrice
+carte
+chaise
+corbeille
+crayon
+dictionnaire
+examen
+fenêtre
+feuilde papier
+horloge
+livre
+montre
+porte
+résultat
+sac à dos
+salle de classe
+stylo
+classe
+copain
+élève
+femme
+fille
+garçon
+homme
+art
+biologie
+bourse
+chimie
+cours
+devoir
+diplôme
+droit
+économie
+éducation physique
+études
+géographie
+gestion
+gymnase
+histoire
+architecture
+école
+informatique
+langues étrangères
+les lettres
+mathématiques
+note
+philosophie
+physique
+psychologie
+sciences
+stylisme de mode
+architecte
+artiste
+athlète
+avocat
+coiffeur
+dentiste
+homme d'affaires
+ingénieur
+journaliste
+médecin
+musicien
+banlieue
+boîte de nuit
+centre commercial
+centre-ville
+ciné
+cinéma
+église
+endroit
+épicerie
+grand magasin
+gymnase
+hôpital
+kiosque
+lieu
+magasin
+maison
+marché
+montagne
+musée
+parc
+piscine
+place
+restaurant
+terrasse de café
+ville
+baguette
+beurre
+boisson gazeuse
+chocolat chaud
+croissant
+eau minérale
+éclair
+frites
+fromage
+jambon
+jus d'orange
+jus de pomme
+lait
+limonade
+pain de campagne
+sandwich
+soupe
+sucre
+thé glacé
+bande dessinée
+baseball
+basket-ball
+cartes
+cinéma
+échecs
+équipe
+football
+football américain
+gagner
+golf
+jeu
+joueur
+joueuse
+loisir
+match
+passe-temps
+spectacle
+sport
+stade
+temps libre
+tennis
+volley-ball
+aîné
+beau-frère
+beau-père
+belle-mère
+belle-sœur
+cadet
+chat
+chien
+cousin
+demi-frère
+demi-sœur
+enfants
+époux
+famille
+fils
+frère
+grand-mère
+grand-père
+grands-parents
+mari
+mère
+neveu
+nièce
+oiseau
+oncle
+parents
+père
+petit-fils
+petite-fille
+petits-enfants
+poisson
+sœur
+quelque chose
+quelques
+tasse
+verre
+tout
+trop de
+divorce
+étape
+jeunesse
+adolescence
+âge adulte
+enfance
+état civil
+mariage
+mort
+naissance
+vie
+vieillesse
+amitié
+amour
+bonheur
+couple
+ensemble
+fiancé
+fiancée
+jeunes mariés
+rendez-vous
+bière
+biscuit
+bonbon
+cadeau
+champagne
+dessert
+fête
+gâteau
+glace
+glaçon
+hôte
+hôtesse
+invité
+invitée
+jour férié
+surprise
+vin
+soldes
+taille
+vendeur
+vendeuse
+anorak
+baskets
+blouson
+casquette
+ceinture
+chapeau
+chaussette
+chaussure
+chemise
+chemisier
+costume
+cravate
+écharpe
+gant
+jean
+jupe
+lunettes de soleil
+maillot de bain
+manteau
+pantalon
+pull
+robe
+sac à main
+short
+sous-vêtement
+tailleur
+tee-shirt
+vêtements
+droite
+gauche

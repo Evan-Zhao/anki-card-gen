@@ -1,10 +1,10 @@
-use csv;
+use glob::glob;
 use regex::Regex;
 use reqwest;
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::error;
-use std::fs::File;
+use std::fs;
 use std::iter::zip;
 use std::vec::Vec;
 use tl;
@@ -188,15 +188,18 @@ fn example_remove_trans(example: ExamplePair) -> (String, String) {
     (format!("{sentence} -- {transl}"), sentence)
 }
 
-async fn wiktionary_lookup(
-    word: &str,
-) -> Option<HashMap<&str, Option<String>>> {
+async fn wiktionary_lookup(word: &str) -> Option<HashMap<&str, Option<String>>> {
     let url = format!("https://en.wiktionary.org/wiki/{word}");
     let res = reqwest::get(url.as_str()).await.ok()?;
     let body = res.text().await.ok()?;
     let dom = tl::parse(body.borrow(), tl::ParserOptions::default()).ok()?;
     let parser = dom.parser();
-    let mw_parser_output = dom.query_selector("div.mw-parser-output").unwrap().next()?.get(parser).unwrap();
+    let mw_parser_output = dom
+        .query_selector("div.mw-parser-output")
+        .unwrap()
+        .next()?
+        .get(parser)
+        .unwrap();
     let body_elems = get_children(parser, mw_parser_output)?;
     let french_tags = split_and_take(parser, &body_elems, "h2", "French")?;
     let sections = split_at_h3_h4(french_tags);
@@ -246,20 +249,12 @@ async fn wiktionary_lookup(
     ]))
 }
 
-fn read_words_from_csv(filename: &str) -> Result<Vec<String>, Box<dyn error::Error>> {
-    let file = File::open(filename)?;
+fn read_all_txts(glob_pattern: &str) -> Result<Vec<String>, Box<dyn error::Error>> {
     let mut words: Vec<String> = Vec::new();
-    for result in csv::ReaderBuilder::new()
-        .delimiter(b'\t')
-        .from_reader(file)
-        .records()
-    {
-        let record = result?;
-        let record_vec: Vec<&str> = record.iter().filter(|s| !s.is_empty()).collect();
-        match record_vec[..] {
-            [word, _] => words.push(word.to_owned()),
-            _ => Err("Incorrect number of fields in record")?,
-        }
+    for entry in glob(glob_pattern).expect("Failed to read glob pattern") {
+        let file_content = fs::read_to_string(entry?)?;
+        let words_ = file_content.split("\n").filter(|s| !s.is_empty());
+        words.extend(words_.map(|s| s.to_owned()));
     }
     Ok(words)
 }
@@ -269,7 +264,7 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    for word in read_words_from_csv("data.txt").unwrap() {
+    for word in read_all_txts("./words/*.txt").unwrap() {
         let res = rt.block_on(wiktionary_lookup(word.as_str()));
         println!("{} => {:?}\n\n", word, res);
     }
