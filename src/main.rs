@@ -21,9 +21,15 @@ enum NounGender {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 enum PartOfSpeech {
-    Noun { gender: Option<NounGender> },
-    Verb { conjugation: String },
-    Adjective { forms: HashMap<String, String> },
+    Noun {
+        gender: Option<NounGender>,
+    },
+    Verb,
+    Adjective {
+        f: Option<String>,
+        mp: Option<String>,
+        fp: Option<String>,
+    },
     Pronoun,
     Adverb,
     Numeral,
@@ -173,10 +179,10 @@ fn parse_meaning_item(parser: &Parser, node: &Node, pos: PartOfSpeech) -> Option
             "span.e-quotation"
         };
         let orig = query_select_first(parser, node, orig_query)?.as_tag()?;
-        let orig = orig.inner_text(parser).into_owned();
+        let orig = orig.inner_html(parser);
         let trans = query_select_first(parser, node, "span.e-translation");
         let trans = match trans {
-            Some(Node::Tag(tag)) => Some(tag.inner_text(parser).into_owned()),
+            Some(Node::Tag(tag)) => Some(tag.inner_html(parser)),
             Some(_) => return None,
             None => None,
         };
@@ -264,8 +270,36 @@ fn get_pr_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<Pronunci
     Some(Pronunciation { ipa, audio_url })
 }
 
+fn get_adj_form_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<PartOfSpeech> {
+    let outer_node = find_first_node_by_name(section, "p")?;
+    let children: Vec<&HTMLTag> = get_children(parser, outer_node)?
+        .iter()
+        .filter_map(|node| node.as_tag())
+        .collect();
+    let mut f: Option<String> = None;
+    let mut mp: Option<String> = None;
+    let mut fp: Option<String> = None;
+    for idx in 0..children.len() - 1 {
+        let this_tag = children[idx];
+        let next_tag = children[idx + 1];
+        if this_tag.name() != "i" || next_tag.name() != "b" {
+            continue;
+        }
+        let label = this_tag.inner_text(parser).to_string();
+        let form = next_tag.inner_text(parser).to_string();
+        match label.as_str() {
+            "feminine" => f = Some(form),
+            "masculine plural" => mp = Some(form),
+            "feminine plural" => fp = Some(form),
+            _ => continue,
+        };
+    }
+    Some(PartOfSpeech::Adjective { f, mp, fp })
+}
+
 async fn wiktionary_lookup(word: &str) -> ResultOrError<Word> {
     let part_of_speech_name: HashMap<&str, PartOfSpeech> = HashMap::from([
+        ("Verb", PartOfSpeech::Verb),
         ("Pronoun", PartOfSpeech::Pronoun),
         ("Adverb", PartOfSpeech::Adverb),
         ("Numeral", PartOfSpeech::Numeral),
@@ -297,16 +331,10 @@ async fn wiktionary_lookup(word: &str) -> ResultOrError<Word> {
                     get_meanings_from_section(parser, section, PartOfSpeech::Noun { gender })?;
                 meanings.extend(meanings_);
             }
-            "Verb" => {
-                let conjugation = "".to_owned();
-                let meanings_ =
-                    get_meanings_from_section(parser, section, PartOfSpeech::Verb { conjugation })?;
-                meanings.extend(meanings_);
-            }
             "Adjective" => {
-                let forms = HashMap::<String, String>::new();
-                let meanings_ =
-                    get_meanings_from_section(parser, section, PartOfSpeech::Adjective { forms })?;
+                let adj_forms = get_adj_form_from_section(parser, &section)
+                    .ok_or("Adjective forms parsing failed")?;
+                let meanings_ = get_meanings_from_section(parser, section, adj_forms)?;
                 meanings.extend(meanings_);
             }
             s if part_of_speech_name.contains_key(s) => {

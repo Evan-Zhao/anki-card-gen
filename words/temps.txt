@@ -30,7 +30,6 @@ en avance
 en retard
 midi
 minuit
-pile
 presque
 tard
 tôt
