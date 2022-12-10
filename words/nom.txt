@@ -32,7 +32,6 @@ crayon
 dictionnaire
 examen
 fenêtre
-feuilde papier
 horloge
 livre
 montre
@@ -57,7 +56,6 @@ devoir
 diplôme
 droit
 économie
-éducation physique
 études
 géographie
 gestion
@@ -66,7 +64,6 @@ histoire
 architecture
 école
 informatique
-langues étrangères
 les lettres
 mathématiques
 note
@@ -74,7 +71,6 @@ philosophie
 physique
 psychologie
 sciences
-stylisme de mode
 architecte
 artiste
 athlète
@@ -109,11 +105,9 @@ parc
 piscine
 place
 restaurant
-terrasse de café
 ville
 baguette
 beurre
-boisson gazeuse
 chocolat chaud
 croissant
 eau minérale
@@ -129,7 +123,6 @@ pain de campagne
 sandwich
 soupe
 sucre
-thé glacé
 bande dessinée
 baseball
 basket-ball

@@ -21,7 +21,7 @@ enum NounGender {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 enum PartOfSpeech {
-    Noun { gender: NounGender },
+    Noun { gender: Option<NounGender> },
     Verb { conjugation: String },
     Adjective { forms: HashMap<String, String> },
     Pronoun,
@@ -45,6 +45,14 @@ struct Meaning {
 struct Pronunciation {
     ipa: String,
     audio_url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Word {
+    word: String,
+    wiki_link: String,
+    pronunciation: Option<Pronunciation>,
+    meanings: Vec<Meaning>,
 }
 
 fn get_children<'a>(parser: &'a Parser<'a>, node: &'a Node<'a>) -> Option<Vec<&'a Node<'a>>> {
@@ -222,24 +230,23 @@ fn get_meanings_from_section<'a>(
 ) -> ResultOrError<Vec<Meaning>> {
     let ol = find_first_node_by_name(&section[1..], "ol").ok_or("Cannot find <ol>")?;
     let children = get_children(parser, ol).expect("");
-    let mut ret = Vec::<Meaning>::new();
-    // If any meaning item fails to parse, return None.
-    for node in children {
-        let tag_ = node.as_tag();
-        if tag_.is_none() || tag_.unwrap().name() != "li" {
-            continue;
-        }
-        ret.push(parse_meaning_item(parser, node, pos.clone()).ok_or("Cannot parse meaning item")?);
-    }
+    let ret = children
+        .iter()
+        .filter_map(|node| {
+            let tag_ = node.as_tag();
+            if tag_.is_none() || tag_.unwrap().name() != "li" {
+                return None;
+            }
+            parse_meaning_item(parser, node, pos.clone())
+        })
+        .collect::<Vec<Meaning>>();
     Ok(ret)
 }
 
 fn get_gender_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<NounGender> {
-    // section[2]; or we can also say we're looking for the next <p> tag.
-    // Should be equivalent.
     // tl query selector doesn't seem to work on composite selectors (like `span abbr`)
-    let span_node = query_select_first(parser, section[2], "span")?;
-    let abbr_node = query_select_first(parser, span_node, "abbr")?;
+    let outer_node = find_first_node_by_name(section, "p")?;
+    let abbr_node = query_select_first(parser, outer_node, "abbr")?;
     match get_immediate_text(parser, abbr_node) {
         Some(s) if s == "m" => Some(NounGender::Masculine),
         Some(s) if s == "f" => Some(NounGender::Feminine),
@@ -257,7 +264,7 @@ fn get_pr_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<Pronunci
     Some(Pronunciation { ipa, audio_url })
 }
 
-async fn wiktionary_lookup(word: &str) -> ResultOrError<json::Value> {
+async fn wiktionary_lookup(word: &str) -> ResultOrError<Word> {
     let part_of_speech_name: HashMap<&str, PartOfSpeech> = HashMap::from([
         ("Pronoun", PartOfSpeech::Pronoun),
         ("Adverb", PartOfSpeech::Adverb),
@@ -272,7 +279,7 @@ async fn wiktionary_lookup(word: &str) -> ResultOrError<json::Value> {
     let body = res.text().await?;
     let dom = tl::parse(body.as_str(), tl::ParserOptions::default())?;
     let parser = dom.parser();
-    let sections = fetch_french_sections(&dom, parser).ok_or("Page malformed")?;
+    let sections = fetch_french_sections(&dom, parser).ok_or(format!("Cannot find word {word}"))?;
     let mut pronunciation: Option<Pronunciation> = None;
     let mut meanings = Vec::<Meaning>::new();
     for section in sections {
@@ -285,8 +292,7 @@ async fn wiktionary_lookup(word: &str) -> ResultOrError<json::Value> {
                 pronunciation = get_pr_from_section(parser, &section);
             }
             "Noun" => {
-                let gender =
-                    get_gender_from_section(parser, &section).ok_or("Gender parsing failed")?;
+                let gender = get_gender_from_section(parser, &section);
                 let meanings_ =
                     get_meanings_from_section(parser, section, PartOfSpeech::Noun { gender })?;
                 meanings.extend(meanings_);
@@ -311,34 +317,34 @@ async fn wiktionary_lookup(word: &str) -> ResultOrError<json::Value> {
             _ => (),
         }
     }
-    Ok(json::json!({
-        "word": word.to_owned(),
-        "wiki_link": format!("{url}#French"),
-        "pronunciation": pronunciation,
-        "meanings": meanings,
-    }))
+    Ok(Word {
+        word: word.to_owned(),
+        wiki_link: format!("{url}#French"),
+        pronunciation,
+        meanings,
+    })
 }
 
-async fn look_up_all(glob_pattern: &str) -> ResultOrError<json::Value> {
+async fn look_up_all(glob_pattern: &str) -> ResultOrError<Vec<Word>> {
     let mut words: Vec<String> = Vec::new();
     for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
         let file_content = fs::read_to_string(entry?)?;
         let words_ = file_content.split("\n").filter(|s| !s.is_empty());
         words.extend(words_.map(|s| s.to_owned()));
     }
-    let mut data = Vec::<json::Value>::new();
+    let mut data = Vec::<Word>::new();
     for word in words {
         match wiktionary_lookup(word.as_str()).await {
             Ok(json) => {
                 data.push(json);
             }
             Err(err) => {
-                println!("Failed to look up {} due to error '{}'", word, err);
+                println!("Failed to look up '{}' due to error '{}'", word, err);
                 continue;
             }
         }
     }
-    Ok(json::Value::Array(data))
+    Ok(data)
 }
 
 fn main() {
@@ -347,5 +353,6 @@ fn main() {
         .build()
         .unwrap();
     let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
-    fs::write("collected.json", data.to_string()).unwrap()
+    let serialized = json::to_string(&data).unwrap();
+    fs::write("collected.json", serialized).unwrap()
 }
