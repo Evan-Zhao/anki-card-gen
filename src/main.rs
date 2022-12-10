@@ -1,7 +1,8 @@
 use glob::glob;
 use regex::Regex;
 use reqwest;
-use std::borrow::Borrow;
+use serde::{Deserialize, Serialize};
+use serde_json as json;
 use std::collections::HashMap;
 use std::error;
 use std::fs;
@@ -9,6 +10,42 @@ use std::iter::zip;
 use std::vec::Vec;
 use tl;
 use tl::{HTMLTag, Node, Parser};
+
+type ResultOrError<T> = Result<T, Box<dyn error::Error>>;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+enum NounGender {
+    Masculine,
+    Feminine,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum PartOfSpeech {
+    Noun { gender: NounGender },
+    Verb { conjugation: String },
+    Adjective { forms: HashMap<String, String> },
+    Pronoun,
+    Adverb,
+    Numeral,
+    Determiner,
+    Preposition,
+    Interjection,
+}
+
+type Example = (String, Option<String>);
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct Meaning {
+    pos: PartOfSpeech,
+    meaning: String,
+    examples: Vec<Example>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Pronunciation {
+    ipa: String,
+    audio_url: String,
+}
 
 fn get_children<'a>(parser: &'a Parser<'a>, node: &'a Node<'a>) -> Option<Vec<&'a Node<'a>>> {
     let handles = node.children()?;
@@ -26,7 +63,9 @@ fn query_select_first<'a>(
     query: &str,
 ) -> Option<&'a Node<'a>> {
     let tag = node.as_tag()?;
-    let mut hits = tag.query_selector(parser, query)?;
+    let mut hits = tag
+        .query_selector(parser, query)
+        .expect("Failed to parse query");
     let first_hit = hits.next()?;
     first_hit.get(parser)
 }
@@ -78,7 +117,7 @@ fn split_and_take<'a, 'b>(
     }
 }
 
-fn split_at_h3_h4<'a, 'b>(nodes: &'b [&'a Node<'a>]) -> Vec<&'b [&'a Node<'a>]> {
+fn split_at_h3_h4<'a, 'b>(nodes: &'b [&'a Node<'a>]) -> Vec<Vec<&'a Node<'a>>> {
     let splitters: Vec<usize> = nodes
         .iter()
         .enumerate()
@@ -86,8 +125,23 @@ fn split_at_h3_h4<'a, 'b>(nodes: &'b [&'a Node<'a>]) -> Vec<&'b [&'a Node<'a>]> 
         .map(|pair| pair.0)
         .collect();
     zip(splitters[..].iter(), splitters[1..].iter())
-        .map(|pair| &nodes[*pair.0..*pair.1])
+        .map(|pair| nodes[*pair.0..*pair.1].iter().map(|&x| x).collect())
         .collect()
+}
+
+fn fetch_french_sections<'a>(
+    dom: &'a tl::VDom,
+    parser: &'a Parser,
+) -> Option<Vec<Vec<&'a Node<'a>>>> {
+    let mw_parser_output = dom
+        .query_selector("div.mw-parser-output")
+        .unwrap()
+        .next()?
+        .get(parser)
+        .unwrap();
+    let body_elems = get_children(parser, mw_parser_output)?;
+    let french_tags = split_and_take(parser, &body_elems, "h2", "French")?;
+    Some(split_at_h3_h4(french_tags))
 }
 
 fn find_first_node_by_name<'a>(nodes: &[&'a Node<'a>], node_name: &str) -> Option<&'a Node<'a>> {
@@ -103,10 +157,8 @@ fn find_first_node_by_name<'a>(nodes: &[&'a Node<'a>], node_name: &str) -> Optio
     return None;
 }
 
-type ExamplePair = (String, Option<String>);
-
-fn parse_meaning_item(parser: &Parser, node: &Node) -> Option<(String, Vec<ExamplePair>)> {
-    fn parse_example(parser: &Parser, node: &Node, inline_mode: bool) -> Option<ExamplePair> {
+fn parse_meaning_item(parser: &Parser, node: &Node, pos: PartOfSpeech) -> Option<Meaning> {
+    fn parse_example(parser: &Parser, node: &Node, inline_mode: bool) -> Option<Example> {
         let orig_query = if inline_mode {
             "i.Latn.mention.e-example"
         } else {
@@ -146,8 +198,12 @@ fn parse_meaning_item(parser: &Parser, node: &Node) -> Option<(String, Vec<Examp
         .collect::<Vec<String>>()
         .join("");
     // Meaning text only lasts 1 line.
-    let meaning = meanings.split("\n").next()?.trim().to_string();
-    Some((meaning, examples))
+    let meaning = shorten_meaning(meanings.split("\n").next()?.trim().to_string());
+    Some(Meaning {
+        pos,
+        meaning,
+        examples,
+    })
 }
 
 fn shorten_meaning(meaning: String) -> String {
@@ -159,53 +215,66 @@ fn shorten_meaning(meaning: String) -> String {
     }
 }
 
-fn get_meaning_from_section<'a>(
+fn get_meanings_from_section<'a>(
     parser: &Parser<'a>,
-    section: &[&'a Node<'a>],
-) -> Option<(String, Option<ExamplePair>)> {
-    let ol = find_first_node_by_name(&section[1..], "ol")?;
-    let children = get_children(parser, ol)?;
-    let mut meanings: Vec<String> = Vec::new();
-    let mut examples: Vec<ExamplePair> = Vec::new();
+    section: Vec<&'a Node<'a>>,
+    pos: PartOfSpeech,
+) -> ResultOrError<Vec<Meaning>> {
+    let ol = find_first_node_by_name(&section[1..], "ol").ok_or("Cannot find <ol>")?;
+    let children = get_children(parser, ol).expect("");
+    let mut ret = Vec::<Meaning>::new();
+    // If any meaning item fails to parse, return None.
     for node in children {
-        match node.as_tag() {
-            Some(tag) if tag.name() == "li" => {
-                let (meaning, examples_) = parse_meaning_item(parser, node)?;
-                meanings.push(shorten_meaning(meaning).to_owned());
-                examples.extend(examples_)
-            }
-            _ => {
-                continue;
-            }
+        let tag_ = node.as_tag();
+        if tag_.is_none() || tag_.unwrap().name() != "li" {
+            continue;
         }
+        ret.push(parse_meaning_item(parser, node, pos.clone()).ok_or("Cannot parse meaning item")?);
     }
-    Some((meanings.join("; "), examples.iter().next().cloned()))
+    Ok(ret)
 }
 
-fn example_remove_trans(example: ExamplePair) -> (String, String) {
-    let (sentence, transl) = example;
-    let transl = transl.unwrap_or("".to_string());
-    (format!("{sentence} -- {transl}"), sentence)
+fn get_gender_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<NounGender> {
+    // section[2]; or we can also say we're looking for the next <p> tag.
+    // Should be equivalent.
+    // tl query selector doesn't seem to work on composite selectors (like `span abbr`)
+    let span_node = query_select_first(parser, section[2], "span")?;
+    let abbr_node = query_select_first(parser, span_node, "abbr")?;
+    match get_immediate_text(parser, abbr_node) {
+        Some(s) if s == "m" => Some(NounGender::Masculine),
+        Some(s) if s == "f" => Some(NounGender::Feminine),
+        _ => None,
+    }
 }
 
-async fn wiktionary_lookup(word: &str) -> Option<HashMap<&str, Option<String>>> {
+fn get_pr_from_section(parser: &Parser, section: &Vec<&Node>) -> Option<Pronunciation> {
+    let subsec = find_first_node_by_name(&section[1..], "ul")?;
+    let ipa_node = query_select_first(parser, subsec, "span.IPA")?;
+    let ipa = get_immediate_text(parser, ipa_node)?;
+    let audio_tag = query_select_first(parser, subsec, "source")?.as_tag()?;
+    let audio_href = audio_tag.attributes().get("src")??.as_utf8_str();
+    let audio_url = format!("https:{}", audio_href);
+    Some(Pronunciation { ipa, audio_url })
+}
+
+async fn wiktionary_lookup(word: &str) -> ResultOrError<json::Value> {
+    let part_of_speech_name: HashMap<&str, PartOfSpeech> = HashMap::from([
+        ("Pronoun", PartOfSpeech::Pronoun),
+        ("Adverb", PartOfSpeech::Adverb),
+        ("Numeral", PartOfSpeech::Numeral),
+        ("Determiner", PartOfSpeech::Determiner),
+        ("Preposition", PartOfSpeech::Preposition),
+        ("Interjection", PartOfSpeech::Interjection),
+    ]);
+
     let url = format!("https://en.wiktionary.org/wiki/{word}");
-    let res = reqwest::get(url.as_str()).await.ok()?;
-    let body = res.text().await.ok()?;
-    let dom = tl::parse(body.borrow(), tl::ParserOptions::default()).ok()?;
+    let res = reqwest::get(url.as_str()).await?;
+    let body = res.text().await?;
+    let dom = tl::parse(body.as_str(), tl::ParserOptions::default())?;
     let parser = dom.parser();
-    let mw_parser_output = dom
-        .query_selector("div.mw-parser-output")
-        .unwrap()
-        .next()?
-        .get(parser)
-        .unwrap();
-    let body_elems = get_children(parser, mw_parser_output)?;
-    let french_tags = split_and_take(parser, &body_elems, "h2", "French")?;
-    let sections = split_at_h3_h4(french_tags);
-    let mut ipa: Option<String> = None;
-    let mut meaning: Option<String> = None;
-    let mut example: Option<ExamplePair> = None;
+    let sections = fetch_french_sections(&dom, parser).ok_or("Page malformed")?;
+    let mut pronunciation: Option<Pronunciation> = None;
+    let mut meanings = Vec::<Meaning>::new();
     for section in sections {
         let header_text = get_header_text(parser, section[0]);
         if header_text.is_none() {
@@ -213,50 +282,63 @@ async fn wiktionary_lookup(word: &str) -> Option<HashMap<&str, Option<String>>> 
         }
         match header_text.unwrap().as_str() {
             "Pronunciation" => {
-                ipa = find_first_node_by_name(&section[1..], "ul")
-                    .and_then(|ul| query_select_first(parser, ul, "span.IPA"))
-                    .and_then(|ipa_node| get_immediate_text(parser, ipa_node));
+                pronunciation = get_pr_from_section(parser, &section);
             }
-            "Noun" | "Pronoun" | "Verb" | "Adjective" | "Adverb" | "Numeral" | "Determiner"
-            | "Interjection" => {
-                let (meaning_, example_) = get_meaning_from_section(parser, section)?;
-                meaning = Some(meaning_);
-                example = example_;
+            "Noun" => {
+                let gender =
+                    get_gender_from_section(parser, &section).ok_or("Gender parsing failed")?;
+                let meanings_ =
+                    get_meanings_from_section(parser, section, PartOfSpeech::Noun { gender })?;
+                meanings.extend(meanings_);
+            }
+            "Verb" => {
+                let conjugation = "".to_owned();
+                let meanings_ =
+                    get_meanings_from_section(parser, section, PartOfSpeech::Verb { conjugation })?;
+                meanings.extend(meanings_);
+            }
+            "Adjective" => {
+                let forms = HashMap::<String, String>::new();
+                let meanings_ =
+                    get_meanings_from_section(parser, section, PartOfSpeech::Adjective { forms })?;
+                meanings.extend(meanings_);
+            }
+            s if part_of_speech_name.contains_key(s) => {
+                let pos = part_of_speech_name[s].clone();
+                let meanings_ = get_meanings_from_section(parser, section, pos)?;
+                meanings.extend(meanings_);
             }
             _ => (),
         }
     }
-    let (ex_trans, ex_untrans) = match example {
-        Some(example_) => {
-            let (lhs, rhs) = example_remove_trans(example_);
-            (Some(lhs), Some(rhs))
-        }
-        None => (None, None),
-    };
-    Some(HashMap::from([
-        ("word", Some(word.to_owned())),
-        ("word_with_article", None),
-        ("frequency_index", None),
-        ("IPA", ipa),
-        ("noun_declention", None),
-        ("meaning", meaning),
-        ("example", ex_trans),
-        ("example_untranslated", ex_untrans),
-        ("wiki_link", Some(format!("{url}#French"))),
-        ("verb_declention", None),
-        ("audio_parisian", Some(format!("[sound:]"))),
-        ("audio_quebecois", None),
-    ]))
+    Ok(json::json!({
+        "word": word.to_owned(),
+        "wiki_link": format!("{url}#French"),
+        "pronunciation": pronunciation,
+        "meanings": meanings,
+    }))
 }
 
-fn read_all_txts(glob_pattern: &str) -> Result<Vec<String>, Box<dyn error::Error>> {
+async fn look_up_all(glob_pattern: &str) -> ResultOrError<json::Value> {
     let mut words: Vec<String> = Vec::new();
-    for entry in glob(glob_pattern).expect("Failed to read glob pattern") {
+    for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
         let file_content = fs::read_to_string(entry?)?;
         let words_ = file_content.split("\n").filter(|s| !s.is_empty());
         words.extend(words_.map(|s| s.to_owned()));
     }
-    Ok(words)
+    let mut data = Vec::<json::Value>::new();
+    for word in words {
+        match wiktionary_lookup(word.as_str()).await {
+            Ok(json) => {
+                data.push(json);
+            }
+            Err(err) => {
+                println!("Failed to look up {} due to error '{}'", word, err);
+                continue;
+            }
+        }
+    }
+    Ok(json::Value::Array(data))
 }
 
 fn main() {
@@ -264,8 +346,6 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    for word in read_all_txts("./words/*.txt").unwrap() {
-        let res = rt.block_on(wiktionary_lookup(word.as_str()));
-        println!("{} => {:?}\n\n", word, res);
-    }
+    let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
+    fs::write("collected.json", data.to_string()).unwrap()
 }
