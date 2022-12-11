@@ -56,7 +56,6 @@ devoir
 diplôme
 droit
 économie
-études
 géographie
 gestion
 gymnase
@@ -70,7 +69,6 @@ note
 philosophie
 physique
 psychologie
-sciences
 architecte
 artiste
 athlète
@@ -123,7 +121,7 @@ sandwich
 soupe
 sucre
 bande dessinée
-baseball
+base-ball
 basket-ball
 échecs
 équipe
@@ -154,14 +152,14 @@ chien
 cousin
 demi-frère
 demi-sœur
-enfants
+enfant
 époux
 famille
 fils
 frère
 grand-mère
 grand-père
-grands-parents
+grand-parent
 mari
 mère
 neveu
@@ -172,7 +170,7 @@ parents
 père
 petit-fils
 petite-fille
-petits-enfants
+petit-enfant
 poisson
 sœur
 quelque chose
@@ -200,7 +198,7 @@ couple
 ensemble
 fiancé
 fiancée
-jeunes mariés
+jeune marié
 rendez-vous
 bière
 biscuit
@@ -215,7 +213,6 @@ glaçon
 hôte
 hôtesse
 invité
-invitée
 jour férié
 surprise
 vin
@@ -224,7 +221,7 @@ taille
 vendeur
 vendeuse
 anorak
-baskets
+basket
 blouson
 casquette
 ceinture
@@ -250,5 +247,5 @@ short
 sous-vêtement
 tailleur
 tee-shirt
-vêtements
+vêtement
 gauche

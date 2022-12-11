@@ -22,6 +22,7 @@ async fn look_up_all(glob_pattern: &str) -> ResultOrError<Vec<Word>> {
             words.insert(word.to_owned());
         }
     }
+    println!("Found {} words", words.len());
     let mut data = Vec::<Word>::new();
     for word in words {
         match wiktionary_lookup(word.as_str()).await {

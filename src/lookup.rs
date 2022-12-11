@@ -1,4 +1,3 @@
-use regex::Regex;
 use reqwest;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -129,12 +128,13 @@ fn split_and_take<'a, 'b>(
 }
 
 fn split_at_h3_h4<'a, 'b>(nodes: &'b [&'a Node<'a>]) -> Vec<Vec<&'a Node<'a>>> {
-    let splitters: Vec<usize> = nodes
+    let mut splitters: Vec<usize> = nodes
         .iter()
         .enumerate()
         .filter(|pair| node_tag_predicate(pair.1, |t| t.name() == "h3" || t.name() == "h4"))
         .map(|pair| pair.0)
         .collect();
+    splitters.push(nodes.len());
     zip(splitters[..].iter(), splitters[1..].iter())
         .map(|pair| nodes[*pair.0..*pair.1].iter().map(|&x| x).collect())
         .collect()
@@ -209,21 +209,12 @@ fn parse_meaning_item(parser: &Parser, node: &Node, pos: PartOfSpeech) -> Option
         .collect::<Vec<String>>()
         .join("");
     // Meaning text only lasts 1 line.
-    let meaning = shorten_meaning(meanings.split("\n").next()?.trim().to_string());
+    let meaning = meanings.split("\n").next()?.trim().to_string();
     Some(Meaning {
         pos,
         meaning,
         examples,
     })
-}
-
-fn shorten_meaning(meaning: String) -> String {
-    let re = Regex::new(r"^(.*) \((.*)\)$").unwrap();
-    let maybe_match = re.captures_iter(meaning.as_str()).next();
-    match maybe_match {
-        Some(match_) if match_[2].len() >= 15 => match_[1].to_owned(),
-        _ => meaning,
-    }
 }
 
 fn get_meanings_from_section<'a>(
@@ -353,6 +344,9 @@ pub async fn wiktionary_lookup(word: &str) -> ResultOrError<Word> {
             }
             _ => (),
         }
+    }
+    if meanings.len() == 0 {
+        Err(format!("Word {word} has no successfully parsed meanings"))?;
     }
     Ok(Word {
         word: word.to_owned(),
