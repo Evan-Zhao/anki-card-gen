@@ -6,6 +6,7 @@ use std::iter::zip;
 use std::vec::Vec;
 use tl;
 use tl::{HTMLTag, Node, Parser};
+use url_escape;
 
 pub type ResultOrError<T> = Result<T, Box<dyn error::Error>>;
 
@@ -308,8 +309,9 @@ pub async fn wiktionary_lookup(word: &str) -> ResultOrError<Word> {
         ("Interjection", PartOfSpeech::Interjection),
     ]);
 
-    let url = format!("https://en.wiktionary.org/wiki/{word}");
-    let res = request_w_header(url.as_str()).await?;
+    let url_ = format!("https://en.wiktionary.org/wiki/{word}");
+    let url = url_escape::encode_path(&url_);
+    let res = request_w_header(&url).await?;
     let body = res.text().await?;
     let dom = tl::parse(body.as_str(), tl::ParserOptions::default())?;
     let parser = dom.parser();

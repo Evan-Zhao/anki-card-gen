@@ -121,9 +121,9 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
-    let serialized = json::to_string(&data).unwrap();
-    fs::write("collected.json", serialized).unwrap();
-    // rt.block_on(process_json_into("collected.json", "anki.txt", "audio/"))
-    //     .unwrap();
+    // let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
+    // let serialized = json::to_string(&data).unwrap();
+    // fs::write("collected.json", serialized).unwrap();
+    rt.block_on(process_json_into("filtered.json", "anki.txt", "audio/"))
+        .unwrap();
 }
