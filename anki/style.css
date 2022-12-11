@@ -1,0 +1,131 @@
+.card {
+    font-size: 24px;
+}
+
+.word {
+    text-align: center;
+    font-size: 36px;
+}
+
+div.meaning b {
+    font-size: 36px;
+}
+
+a {
+    color: #496899
+}
+
+img {
+    max-width: none;
+    max-height: none;
+}
+
+/* color and size of the Part of Speech */
+gr {
+    color: gray;
+    font-size: 0.5em;
+}
+
+/* stuff of the detailed IPA */
+cm {
+    font-size: 1.0em;
+    font-family: sans-serif
+}
+
+cm b {
+    color: #2c298c;
+}
+
+.night_mode cm b {
+    color: lightblue;
+}
+
+/* color of the primary-stress and secondary-stress marker */
+cm clblue {
+    color: CornflowerBlue;
+    font-size: 1.0em;
+    font-weight: 900;
+}
+
+/*
+ color of the long/semilong marker
+ IPA has some really bad choices for marking -- the long/semilong marker is barely visible... so I make it red, and a bit bigger, in order for it to be visible. I also change the font-family to serif, so the visibility is better.
+ In Windows it looks like a charm, but does it look good on Android and MacOS? Well I hope so.
+ */
+cl {
+    color: red;
+    font-size: 1.4em;
+    font-weight: 900;
+    font-family: serif
+}
+
+.night_mode cl {
+    color: #ff8080;
+    font-size: 1.2em;
+    font-weight: 900;
+}
+
+comma {
+    color: #61ba79;
+    font-size: 1.5em;
+}
+
+/* color of the dot in the detailed IPA */
+d {
+    color: gray;
+}
+
+.night_mode d {
+    color: white;
+}
+
+#note {
+    margin: auto;
+    width: 75%;
+    border: 3px solid gray;
+    padding: 10px;
+    text-align: left;
+}
+
+#buttonsBox {
+    margin: auto;
+    width: 50%;
+    border: 0px solid gray;
+    padding: 10px;
+    text-align: center;
+}
+
+/* to save space on the tables */
+li,
+ul,
+dd,
+dl,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0.3em;
+}
+
+blue {
+    color: #6755f2;
+}
+
+red {
+    color: #f25555;
+}
+
+purple {
+    color: #c655f2;
+}
+
+.night_mode blue {
+    color: #80aaff;
+}
+
+.night_mode red {
+    color: #ff8080;
+}

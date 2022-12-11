@@ -1,0 +1,38 @@
+<div class="meaning"> <b> {{Basic meanings of word}} </b> {{Word with article}} <br> </div>
+
+<cm>IPA: {{IPA}}</cm> {{Parisian French Audio (Voice 1)}} </br>
+
+<div id="showExs">
+    <div id="ExsNoTrans">
+        {{Example sentences without translation}} <button id="answerButton" onmouseup="ShowExsTrans()">translation</button><br>
+    </div>
+    <div id="ExsTrans" style="display:none">
+        {{Example sentences}}
+    </div>
+</div>
+
+<p> {{Note}} </p>
+
+<div>
+    <a href="{{Wiktionary entry}}">source</a>
+</div>
+
+<div id="tags" style=" display:none">{{Tags}}</div>
+
+<script>
+    if (document.getElementById("ExsNoTrans").innerHTML.trim().length < 1) {
+        document.getElementById('answerButton').style.display = "none";
+    } else {
+        document.getElementById('answerButton').style.display = "";
+    }
+    var transcript = document.getElementById("tags").innerHTML;
+    if (transcript.indexOf("adj") > -1) {
+        document.getElementById("aa").style.display = "";
+    }
+
+    function ShowExsTrans() {
+        document.getElementById("ExsNoTrans").style.display = "none";
+        document.getElementById("answerButton").style.display = "none";
+        document.getElementById("ExsTrans").style.display = "";
+    }
+</script>
