@@ -92,7 +92,6 @@ cinéma
 endroit
 épicerie
 grand magasin
-gymnase
 hôpital
 kiosque
 lieu
@@ -126,8 +125,6 @@ sucre
 bande dessinée
 baseball
 basket-ball
-cartes
-cinéma
 échecs
 équipe
 football
@@ -254,5 +251,4 @@ sous-vêtement
 tailleur
 tee-shirt
 vêtements
-droite
 gauche

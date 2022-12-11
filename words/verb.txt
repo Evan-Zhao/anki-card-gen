@@ -39,9 +39,7 @@ fréquenter
 inviter
 nager
 patiner
-commencer
 parler
-penser
 apprendre
 boire
 comprendre
@@ -52,11 +50,8 @@ grandir
 grossir
 maigrir
 obéir
-obéir
 réagir
 réfléchir
-réfléchir
-réussir
 réussir
 rougir
 vieillir
@@ -75,7 +70,6 @@ partir
 sentir
 servir
 sortir
-manger
 faire
 avoir
 fêter

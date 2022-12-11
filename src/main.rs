@@ -3,18 +3,24 @@ use serde_json as json;
 use std::fs;
 use std::io::Write;
 use std::vec::Vec;
-
+use std::collections::HashSet;
 mod lookup;
 use lookup::{
     request_w_header, wiktionary_lookup, Example, NounGender, PartOfSpeech, ResultOrError, Word,
 };
 
 async fn look_up_all(glob_pattern: &str) -> ResultOrError<Vec<Word>> {
-    let mut words: Vec<String> = Vec::new();
+    let mut words: HashSet<String> = HashSet::new();
     for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
         let file_content = fs::read_to_string(entry?)?;
         let words_ = file_content.split("\n").filter(|s| !s.is_empty());
-        words.extend(words_.map(|s| s.to_owned()));
+        for word in words_ {
+            if words.contains(word) {
+                println!("Duplicate word '{}'", word);
+                continue;
+            }
+            words.insert(word.to_owned());
+        }
     }
     let mut data = Vec::<Word>::new();
     for word in words {
@@ -114,9 +120,9 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    // let data = rt.block_on(look_up_all("./words/temps.txt")).unwrap();
-    // let serialized = json::to_string(&data).unwrap();
-    // fs::write("collected.json", serialized).unwrap();
-    rt.block_on(process_json_into("collected.json", "anki.txt", "audio/"))
-        .unwrap();
+    let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
+    let serialized = json::to_string(&data).unwrap();
+    fs::write("collected.json", serialized).unwrap();
+    // rt.block_on(process_json_into("collected.json", "anki.txt", "audio/"))
+    //     .unwrap();
 }

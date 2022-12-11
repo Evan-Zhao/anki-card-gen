@@ -25,7 +25,6 @@ week-end
 année
 nuit
 semaine
-après-midi
 en avance
 en retard
 midi
