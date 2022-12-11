@@ -10,7 +10,7 @@ use url_escape;
 
 pub type ResultOrError<T> = Result<T, Box<dyn error::Error>>;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum NounGender {
     Masculine,
     Feminine,
