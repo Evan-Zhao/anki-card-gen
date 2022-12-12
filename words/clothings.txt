@@ -1,0 +1,31 @@
+taille
+vendeur
+vendeuse
+anorak
+basket
+blouson
+casquette
+ceinture
+chapeau
+chaussette
+chaussure
+chemise
+chemisier
+costume
+cravate
+écharpe
+gant
+jean
+jupe
+lunettes de soleil
+maillot de bain
+manteau
+pantalon
+pull
+robe
+sac à main
+short
+sous-vêtement
+tailleur
+tee-shirt
+vêtement

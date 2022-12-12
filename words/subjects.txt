@@ -1,0 +1,28 @@
+diplôme
+droit
+économie
+géographie
+gestion
+gymnase
+histoire
+architecture
+école
+informatique
+les lettres
+mathématiques
+philosophie
+physique
+psychologie
+architecte
+artiste
+athlète
+avocat
+coiffeur
+dentiste
+homme d'affaires
+ingénieur
+journaliste
+médecin
+musicien
+art
+biologie

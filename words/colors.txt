@@ -1,0 +1,14 @@
+bleu
+blond
+brun
+châtain
+marron
+noir
+vert
+jaune
+orange
+rose
+rouge
+violet
+blanc
+gris
