@@ -206,7 +206,7 @@ fn parse_meaning_item(parser: &Parser, node: &Node, pos: PartOfSpeech) -> Option
     };
     let meanings = children
         .iter()
-        .map(|node| node.inner_text(parser).into_owned())
+        .map(|node| node.inner_text(parser).replace("&#32;", " "))
         .collect::<Vec<String>>()
         .join("");
     // Meaning text only lasts 1 line.
