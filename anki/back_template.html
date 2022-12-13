@@ -1,11 +1,11 @@
 <div class="meaning"> <b> {{Basic meanings of word}} </b> {{Word with article}} <br> </div>
 
-<cm>IPA: {{IPA}}</cm> {{Parisian French Audio (Voice 1)}} </br>
+<cm id="ipaholder">IPA: <span id="ipa">{{IPA}}</span> </cm> {{Parisian French Audio (Voice 1)}} </br>
 
 <div id="showExs">
     <div id="ExsNoTrans">
-        {{Example sentences without translation}} <button id="answerButton" onmouseup="ShowExsTrans()">translation</button><br>
-    </div>
+        {{Example sentences without translation}} 
+    </div><button id="answerButton" onmouseup="ShowExsTrans()">translation</button><br>
     <div id="ExsTrans" style="display:none">
         {{Example sentences}}
     </div>
@@ -20,14 +20,19 @@
 <div id="tags" style=" display:none">{{Tags}}</div>
 
 <script>
-    if (document.getElementById("ExsNoTrans").innerHTML.trim().length < 1) {
-        document.getElementById('answerButton').style.display = "none";
-    } else {
-        document.getElementById('answerButton').style.display = "";
-    }
+    HideIfNoContent("ipa", "ipaholder");
+    HideIfNoContent("ExsNoTrans", "answerButton");
     var transcript = document.getElementById("tags").innerHTML;
     if (transcript.indexOf("adj") > -1) {
         document.getElementById("aa").style.display = "";
+    }
+
+    function HideIfNoContent(content_id, hide_id) {
+        if (document.getElementById(content_id).innerHTML.trim().length < 1) {
+            document.getElementById(hide_id).style.display = "none";
+        } else {
+            document.getElementById(hide_id).style.display = "";
+        }
     }
 
     function ShowExsTrans() {
