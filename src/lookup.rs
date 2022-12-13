@@ -44,13 +44,13 @@ pub struct Meaning {
     pub examples: Vec<Example>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Pronunciation {
     pub ipa: String,
     pub audio_url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Word {
     pub word: String,
     pub wiki_link: String,

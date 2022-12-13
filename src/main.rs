@@ -1,9 +1,10 @@
 use glob::glob;
 use serde_json as json;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::Write;
+use std::path;
 use std::vec::Vec;
-use std::{collections::HashSet, path};
 mod lookup;
 use lookup::{
     request_w_header, wiktionary_lookup, Example, Meaning, NounGender, PartOfSpeech, ResultOrError,
@@ -11,36 +12,35 @@ use lookup::{
 };
 use regex::Regex;
 
-async fn look_up_all(glob_pattern: &str) -> ResultOrError<Vec<Word>> {
-    let mut words: HashSet<String> = HashSet::new();
+fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>> {
+    let mut words: HashMap<String, String> = HashMap::new();
+    let line_pattern = Regex::new(r"^([^[]+) [(.*)+]$").unwrap();
     for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
         let file_content = fs::read_to_string(entry?)?;
-        let words_ = file_content.split("\n").filter(|s| !s.is_empty());
-        for word in words_ {
-            if words.contains(word) {
-                println!("Duplicate word '{}'", word);
-                continue;
-            }
-            words.insert(word.to_owned());
-        }
-    }
-    println!("Found {} words", words.len());
-    let mut data = Vec::<Word>::new();
-    for word in words {
-        match wiktionary_lookup(word.as_str()).await {
-            Ok(json) => {
-                data.push(json);
-            }
-            Err(err) => {
-                println!("Failed to look up '{}' due to error '{}'", word, err);
-                continue;
+        let lines = file_content.split("\n").filter(|s| !s.is_empty());
+        for line in lines {
+            let maybe_match = line_pattern.captures_iter(line).next();
+            match maybe_match {
+                Some(match_) => {
+                    let word = match_[1].to_string();
+                    if words.contains_key(&word) {
+                        println!("Duplicate word '{}'", word);
+                        continue;
+                    }
+                    let meaning = match_[2].to_string();
+                    words.insert(word, meaning);
+                }
+                None => {
+                    println!("Line '{}' is malformed", line);
+                    continue;
+                }
             }
         }
     }
-    Ok(data)
+    Ok(words)
 }
 
-async fn word_to_anki_fields(record: Word, audio_dir: &str) -> ResultOrError<Vec<String>> {
+async fn word_to_anki_fields(record: Word, select_meaning: &str, audio_dir: &str) -> ResultOrError<Vec<String>> {
     fn shorten_meaning(meaning: &str) -> String {
         let re = Regex::new(r"^(.*) \((.*)\)$").unwrap();
         let maybe_match = re.captures_iter(meaning).next();
@@ -81,7 +81,7 @@ async fn word_to_anki_fields(record: Word, audio_dir: &str) -> ResultOrError<Vec
         if (is_m && is_f) || (!is_m && !is_f) {
             // TODO: if some meanings are masc. and some are fem.,
             // display gender at each meaning instead
-            return "".to_string()
+            return "".to_string();
         }
         match (is_vowel, is_m) {
             (true, true) => format!("l'{word} (masc.)"),
@@ -105,21 +105,19 @@ async fn word_to_anki_fields(record: Word, audio_dir: &str) -> ResultOrError<Vec
     } else {
         ("".to_string(), "".to_string())
     };
-    let ipa = match &record.pronunciation {
-        Some(pronunciation) => pronunciation.ipa.clone(),
-        None => "".to_string(),
-    };
-    let audio_url = record.pronunciation.map(|pron| pron.audio_url);
-    let mut audio_file_entry: String = "".to_string();
-    if let Some(url) = &audio_url {
-        let path_str = format!("{audio_dir}/{word}.mp3");
-        let path = path::Path::new(&path_str);
-        if !path.exists() {
-            let audio = request_w_header(url.as_str()).await?.bytes().await?;
-            let mut audio_f = fs::File::create(path)?;
-            audio_f.write(&audio)?;
+    let (ipa, audio_file_entry) = match record.pronunciation {
+        Some(pronunciation) => {
+            let audio_url = pronunciation.audio_url;
+            let path_str = format!("{audio_dir}/{word}.mp3");
+            let path = path::Path::new(&path_str);
+            if !path.exists() {
+                let audio = request_w_header(&audio_url).await?.bytes().await?;
+                let mut audio_f = fs::File::create(path)?;
+                audio_f.write(&audio)?;
+            }
+            (pronunciation.ipa, format!("[sound:{word}.mp3]"))
         }
-        audio_file_entry = format!("[sound:{word}.mp3]");
+        None => ("".to_string(), "".to_string()),
     };
     Ok(vec![
         word,
@@ -136,17 +134,33 @@ async fn word_to_anki_fields(record: Word, audio_dir: &str) -> ResultOrError<Vec
     ])
 }
 
-async fn process_json_into(from: &str, to: &str, audio_dir: &str) -> ResultOrError<()> {
-    let data = fs::read_to_string(from)?;
-    let words: Vec<Word> = json::from_str(data.as_str())?;
-    let mut out_f = fs::File::create(to)?;
-    for word in words {
-        for field in word_to_anki_fields(word, audio_dir).await? {
-            out_f.write(field.as_bytes())?;
-            out_f.write("\t".as_bytes())?;
+async fn look_up_all(
+    glob_pattern: &str,
+    anki_f: &str,
+    audio_dir: &str,
+    json_f: &str,
+) -> ResultOrError<()> {
+    let to_look_up = read_words_from(glob_pattern)?;
+    println!("Found {} words", to_look_up.len());
+    let mut words = Vec::<Word>::new();
+    let mut out_f = fs::File::create(anki_f)?;
+    for (word_str, meaning) in to_look_up {
+        match wiktionary_lookup(&word_str).await {
+            Ok(word) => {
+                words.push(word.clone());
+                for field in word_to_anki_fields(word, &meaning, audio_dir).await? {
+                    out_f.write(field.as_bytes())?;
+                    out_f.write("\t".as_bytes())?;
+                }
+                out_f.write("\n".as_bytes())?;
+            }
+            Err(err) => {
+                println!("Failed to look up '{}' due to error '{}'", word_str, err);
+                continue;
+            }
         }
-        out_f.write("\n".as_bytes())?;
     }
+    fs::write(json_f, json::to_string(&words)?)?;
     Ok(())
 }
 
@@ -155,9 +169,6 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    // let data = rt.block_on(look_up_all("./words/*.txt")).unwrap();
-    // let serialized = json::to_string(&data).unwrap();
-    // fs::write("collected.json", serialized).unwrap();
-    rt.block_on(process_json_into("filtered.json", "anki.txt", "audio/"))
-        .unwrap();
+    let result = look_up_all("./words/*.txt", "anki.txt", "audio/", "words.json");
+    rt.block_on(result).unwrap();
 }
