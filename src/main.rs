@@ -52,13 +52,9 @@ async fn word_to_anki_fields(
     select_meaning: &str,
     audio_dir: &str,
 ) -> ResultOrError<Vec<String>> {
-    fn format_example(example: &Example) -> (String, String) {
+    fn format_example(example: Example) -> (String, String) {
         let (sentence, transl) = example;
-        let transl = match transl {
-            Some(transl) => format!("{sentence} -- {transl}"),
-            None => sentence.to_string(),
-        };
-        (transl, sentence.to_string())
+        (sentence, transl.unwrap_or("".to_string()))
     }
 
     fn format_genders(word: &str, meaning: &Meaning) -> String {
@@ -129,7 +125,7 @@ async fn word_to_anki_fields(
     let word_w_article = format_genders(&word, &meaning);
     let examples = &meaning.examples;
     let (ex_w_trans, ex_wo_trans) = if examples.len() > 0 {
-        format_example(&examples[0])
+        format_example(examples[0].clone())
     } else {
         ("".to_string(), "".to_string())
     };

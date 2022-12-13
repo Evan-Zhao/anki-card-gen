@@ -3,11 +3,11 @@
 <cm id="ipaholder">IPA: <span id="ipa">{{IPA}}</span> </cm> {{Parisian French Audio (Voice 1)}} </br>
 
 <div id="showExs">
-    <div id="ExsNoTrans">
-        {{Example sentences without translation}} 
+    <div id="example">
+        {{Example sentences}} 
     </div><button id="answerButton" onmouseup="ShowExsTrans()">translation</button><br>
-    <div id="ExsTrans" style="display:none">
-        {{Example sentences}}
+    <div id="exampleTrans" style="display:none">
+        {{Example sentence translation}}
     </div>
 </div>
 
@@ -21,7 +21,7 @@
 
 <script>
     HideIfNoContent("ipa", "ipaholder");
-    HideIfNoContent("ExsNoTrans", "answerButton");
+    HideIfNoContent("exampleTrans", "answerButton");
     var transcript = document.getElementById("tags").innerHTML;
     if (transcript.indexOf("adj") > -1) {
         document.getElementById("aa").style.display = "";
@@ -36,8 +36,7 @@
     }
 
     function ShowExsTrans() {
-        document.getElementById("ExsNoTrans").style.display = "none";
         document.getElementById("answerButton").style.display = "none";
-        document.getElementById("ExsTrans").style.display = "";
+        document.getElementById("exampleTrans").style.display = "";
     }
 </script>
