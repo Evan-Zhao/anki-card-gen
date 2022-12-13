@@ -1,76 +1,76 @@
-adorer
-aimer
-aimer mieux
-arriver
-chercher
-commencer
-dessiner
-détester
-donner
-étudier
-habiter
-manger
-oublier
-partager
-penser
-regarder
-rencontrer
-retrouver
-travailler
-voyager
-assister
-demander
-dîner
-échouer
-écouter
-enseigner
-expliquer
-préparer
-rentrer
-téléphoner
-trouver
-visiter
-bavarder
-danser
-déjeuner
-dépenser
-explorer
-fréquenter
-inviter
-nager
-patiner
-parler
-apprendre
-boire
-comprendre
-prendre
-choisir
-finir
-grandir
-grossir
-maigrir
-obéir
-réagir
-réfléchir
-réussir
-rougir
-vieillir
-aider
-bricoler
-désirer
-chanter
-indiquer
-jouer
-marcher
-pratiquer
-skier
-courir
-dormir
-partir
-sentir
-servir
-sortir
-faire
-avoir
-fêter
-porter
+adorer [to love, to adore]
+aimer [to love]
+aimer mieux [to prefer]
+arriver [to arrive]
+chercher [to look for, to seek]
+commencer [to begin, commence]
+dessiner [to draw, to sketch]
+détester [to thoroughly dislike; to hate; to detest]
+donner [to give, to transfer the possession/holding of something to someone else]
+étudier [to study]
+habiter [to live (in)]
+manger [to eat]
+oublier [to forget]
+partager [to share]
+penser [to think, reflect, concentrate one's mind on something]
+regarder [to look at]
+rencontrer [to meet]
+retrouver [to find (again); to rediscover]
+travailler [to work]
+voyager [to travel, to voyage]
+assister [to attend, to be present]
+demander [to ask (a person)]
+dîner [to dine]
+échouer [to fail, fall through, miscarry]
+écouter [to listen]
+enseigner [to teach]
+expliquer [to explain]
+préparer [to prepare]
+rentrer [(intransitive, followed by dans) to go back, to re-enter]
+téléphoner [to call, to ring, to telephone]
+trouver [to find; to retrieve something lost, turn up something hidden, or encounter something previously unknown to one]
+visiter [to visit (a place)]
+bavarder [to chat]
+danser [to dance]
+déjeuner [(formal) to lunch, to eat lunch, to have lunch]
+dépenser [to spend (money)]
+explorer [to explore]
+fréquenter [to frequent, to go to (a place)]
+inviter [to invite]
+nager [to swim]
+patiner [to ice-skate]
+parler [to speak, talk]
+apprendre [to learn]
+boire [to drink]
+comprendre [to understand, comprehend]
+prendre [to take]
+choisir [to choose]
+finir [to finish, end, complete]
+grandir [to grow, get bigger]
+grossir [to increase, to make larger]
+maigrir [to slim, to get slim, to lose weight]
+obéir [to obey]
+réagir [to react, respond]
+réfléchir [to ponder, to reflect]
+réussir [to pass (a test); to succeed at something]
+rougir [to redden]
+vieillir [to grow old, to age]
+aider [to help; to aid]
+bricoler [to do DIY]
+désirer [to desire, want]
+chanter [to sing]
+indiquer [to show, indicate]
+jouer [to play]
+marcher [to walk]
+pratiquer [to do; to practise]
+skier [to ski]
+courir [to run]
+dormir [to sleep]
+partir [to go away, leave, depart]
+sentir [to smell]
+servir [to serve]
+sortir [to exit, go out, come out]
+faire [to do]
+avoir [to have]
+fêter [to celebrate]
+porter [to wear]

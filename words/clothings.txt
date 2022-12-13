@@ -1,31 +1,32 @@
-taille
-vendeur
-vendeuse
-anorak
-basket
-blouson
-casquette
-ceinture
-chapeau
-chaussette
-chaussure
-chemise
-chemisier
-costume
-cravate
-écharpe
-gant
-jean
-jupe
-lunettes de soleil
-maillot de bain
-manteau
-pantalon
-pull
-robe
-sac à main
-short
-sous-vêtement
-tailleur
-tee-shirt
-vêtement
+taille [size]
+vendeur [salesman]
+anorak [anorak]
+basket [sneaker]
+blouson [blouson]
+casquette [cap, baseball cap, flat cap]
+ceinture [belt]
+chapeau [hat]
+chaussette [sock]
+chaussure [shoe]
+chemise [shirt]
+chemisier [shirtmaker]
+costume [a suit worn by a man]
+cravate [necktie]
+écharpe [scarf]
+gant [glove]
+jean [a pair of jeans]
+jupe [skirt]
+lunettes de soleil [sunglasses]
+maillot de bain [swimsuit]
+manteau [coat]
+pantalon [trousers]
+pull [pullover]
+robe [dress, frock]
+sac à main [handbag; purse]
+short [shorts]
+sous-vêtement [piece of underwear]
+tailleur [tailor]
+tee-shirt [T-shirt]
+vêtement [item of clothing]
+large [wide, broad]
+serré [tight]

@@ -1,50 +1,50 @@
-agréable
-amusant
-brillant
-charmant
-désagréable
-différent
-difficile
-égoïste
-élégant
-impatient
-important
-indépendant
-intelligent
-intéressant
-occupé
-optimiste
-patient
-pessimiste
-poli
-réservé
-sincère
-sociable
-sympathique
-timide
-court
-moyenne
-frisé
-grand
-jeune
-joli
-laid
-mauvais
-pauvre
-petit
-raide
-actif
-courageux
-cruel
-discret
-doux
-ennuyeux
-étranger
-favori
-fou
-généreux
-gentil
-inquiet
-jaloux
-paresseux
-sportif
+agréable [pleasurable, nice, pleasant, agreeable]
+amusant [amusing; funny]
+brillant [shining; shiny]
+charmant [charming]
+désagréable [unpleasant; disagreeable]
+différent [different]
+difficile [difficult]
+égoïste [selfish; egoistic]
+élégant [elegant]
+impatient [impatient]
+important [important]
+indépendant [independent]
+intelligent [intelligent]
+intéressant [interesting]
+occupé [busy]
+optimiste [optimist]
+patient [patient]
+pessimiste [pessimist]
+poli [polite]
+réservé [reserved, booked]
+sincère [sincere]
+sociable [sociable]
+sympathique [nice, kind, friendly, likeable]
+timide [shy, timid]
+court [short]
+moyenne [average]
+frisé [curly]
+grand [big, great, grand]
+jeune [young]
+joli [pretty; cute]
+laid [physically ugly]
+mauvais [bad]
+pauvre [(after a noun) poor]
+petit [small]
+raide [stiff, straight]
+actif [active]
+courageux [courageous, brave, daring]
+cruel [cruel]
+discret [discreet]
+doux [sweet]
+ennuyeux [dull, boring, tedious, tiresome, monotonous]
+étranger [foreign]
+favori [favorite]
+fou [mad, crazy]
+généreux [generous, kind]
+gentil [helpful, kind]
+inquiet [anxious]
+jaloux [jealous]
+paresseux [lazy]
+sportif [athletic]

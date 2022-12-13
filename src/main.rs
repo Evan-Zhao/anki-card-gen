@@ -1,6 +1,6 @@
 use glob::glob;
 use serde_json as json;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
 use std::path;
@@ -14,7 +14,7 @@ use regex::Regex;
 
 fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>> {
     let mut words: HashMap<String, String> = HashMap::new();
-    let line_pattern = Regex::new(r"^([^[]+) [(.*)+]$").unwrap();
+    let line_pattern = Regex::new(r"^([^\[]+) \[(.*)+\]$").unwrap();
     for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
         let file_content = fs::read_to_string(entry?)?;
         let lines = file_content.split("\n").filter(|s| !s.is_empty());
@@ -40,50 +40,38 @@ fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>>
     Ok(words)
 }
 
-async fn word_to_anki_fields(record: Word, select_meaning: &str, audio_dir: &str) -> ResultOrError<Vec<String>> {
-    fn shorten_meaning(meaning: &str) -> String {
-        let re = Regex::new(r"^(.*) \((.*)\)$").unwrap();
-        let maybe_match = re.captures_iter(meaning).next();
-        match &maybe_match {
-            Some(match_) if match_[2].len() >= 15 => match_[1].to_string(),
-            _ => meaning.to_string(),
-        }
-    }
-
-    fn fuse_shorten_meaning<'a>(meanings: &Vec<Meaning>) -> String {
-        meanings
-            .iter()
-            .map(|m| shorten_meaning(m.meaning.as_str()))
-            .collect::<Vec<_>>()
-            .join("; ")
-    }
-
-    fn format_example(example: Example) -> (String, String) {
+async fn word_to_anki_fields(
+    record: Word,
+    select_meaning: &str,
+    audio_dir: &str,
+) -> ResultOrError<Vec<String>> {
+    fn format_example(example: &Example) -> (String, String) {
         let (sentence, transl) = example;
-        let transl = transl.unwrap_or("".to_string());
-        (format!("{sentence} -- {transl}"), sentence)
+        let transl = match transl {
+            Some(transl) => format!("{sentence} -- {transl}"),
+            None => sentence.to_string(),
+        };
+        (transl, sentence.to_string())
     }
 
-    fn format_genders<'a>(word: &str, meanings: impl Iterator<Item = &'a Meaning>) -> String {
+    fn format_genders(word: &str, meaning: &Meaning) -> String {
         let first_ch = word.chars().nth(0).expect("Word is empty");
         let is_vowel = match first_ch {
             'a' | 'e' | 'i' | 'o' | 'u' | 'h' => true,
             _ => false,
         };
-        let genders = meanings
-            .filter_map(|meaning| match &meaning.pos {
-                PartOfSpeech::Noun { gender } => *gender,
-                _ => None,
-            })
-            .collect::<HashSet<_>>();
-        let is_m = genders.contains(&NounGender::Masculine);
-        let is_f = genders.contains(&NounGender::Feminine);
-        if (is_m && is_f) || (!is_m && !is_f) {
-            // TODO: if some meanings are masc. and some are fem.,
-            // display gender at each meaning instead
-            return "".to_string();
-        }
-        match (is_vowel, is_m) {
+        let is_masc = match meaning.pos {
+            PartOfSpeech::Noun {
+                gender: Some(NounGender::Masculine),
+            } => true,
+            PartOfSpeech::Noun {
+                gender: Some(NounGender::Feminine),
+            } => false,
+            _ => {
+                return "".to_string();
+            }
+        };
+        match (is_vowel, is_masc) {
             (true, true) => format!("l'{word} (masc.)"),
             (true, false) => format!("l'{word} (fem.)"),
             (false, true) => format!("le {word}"),
@@ -91,17 +79,50 @@ async fn word_to_anki_fields(record: Word, select_meaning: &str, audio_dir: &str
         }
     }
 
+    fn match_meaning<'a>(
+        word: &str,
+        meanings: &'a Vec<Meaning>,
+        select_meaning: &str,
+    ) -> ResultOrError<&'a Meaning> {
+        let mut meaning = None;
+        let mut is_ambiguous = false;
+        let all_meanings_str = meanings
+            .iter()
+            .map(|m| "  ".to_string() + &m.meaning)
+            .collect::<Vec<_>>()
+            .join("\n");
+        for meaning_ in meanings {
+            let is_match = meaning_.meaning.contains(select_meaning);
+            if is_match {
+                if meaning.is_some() {
+                    is_ambiguous = true;
+                }
+                meaning = Some(meaning_);
+            }
+        }
+        if is_ambiguous {
+            println!("Ambiguous meaning '{select_meaning}' for word '{word}'; choose from \n{all_meanings_str}\n");
+        }
+        match meaning {
+            Some(meaning) => Ok(meaning),
+            None => {
+                println!(
+                    "No meaning of '{word}' matches the given meaning '{select_meaning}'. Select from:\n{all_meanings_str}");
+                Err(format!("No matching meaning for '{word}'"))?
+            }
+        }
+    }
+
     let word = record.word;
-    if record.meanings.len() == 0 {
+    let meanings = record.meanings;
+    if meanings.len() == 0 {
         Err(format!("Word '{word}' without meaning is malformed"))?
     }
-    let mut meanings = record.meanings;
-    let meaning_str = fuse_shorten_meaning(&meanings);
-    let word_w_article = format_genders(&word, meanings.iter());
-    // let examples: Vec<_> = meanings.iter().filter_map(|meaning| meaning.examples.iter().next()).collect();
-    let mut examples = meanings.remove(0).examples;
+    let meaning = match_meaning(&word, &meanings, select_meaning)?;
+    let word_w_article = format_genders(&word, &meaning);
+    let examples = &meaning.examples;
     let (ex_w_trans, ex_wo_trans) = if examples.len() > 0 {
-        format_example(examples.remove(0))
+        format_example(&examples[0])
     } else {
         ("".to_string(), "".to_string())
     };
@@ -125,7 +146,7 @@ async fn word_to_anki_fields(record: Word, select_meaning: &str, audio_dir: &str
         "".to_string(),
         ipa,
         "".to_string(),
-        meaning_str,
+        select_meaning.to_string(),
         ex_w_trans,
         ex_wo_trans,
         record.wiki_link,

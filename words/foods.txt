@@ -1,17 +1,17 @@
-baguette
-beurre
-chocolat chaud
-croissant
-eau minérale
-éclair
-frites
-fromage
-jambon
-jus d'orange
-jus de pomme
-lait
-limonade
-pain de campagne
-sandwich
-soupe
-sucre
+baguette [baguette]
+beurre [butter]
+chocolat chaud [hot chocolate]
+croissant [croissant]
+eau minérale [mineral water]
+éclair [éclair (pastry)]
+frite [chips, French fries]
+fromage [cheese]
+jambon [ham]
+jus d'orange [orange juice]
+jus de pomme [apple juice]
+lait [milk]
+limonade [lemonade]
+pain de campagne [a large round loaf of bread]
+sandwich [sandwich (food)]
+soupe [soup]
+sucre [sugar]

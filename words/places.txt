@@ -1,36 +1,36 @@
-banlieue
-boîte de nuit
-centre commercial
-centre-ville
-ciné
-cinéma
-église
-endroit
-épicerie
-grand magasin
-hôpital
-kiosque
-lieu
-magasin
-maison
-marché
-montagne
-musée
-parc
-piscine
-place
-restaurant
-ville
-à côté de
-dans
-derrière
-devant
-en
-en face de
-entre
-loin de
-par
-près de
-sous
-sur
-assez
+banlieue [suburb]
+boîte de nuit [(colloquial) nightclub]
+centre commercial [mall; shopping center]
+centre-ville [city center, downtown]
+ciné [(colloquial) cinema; movie theater]
+cinéma [cinema]
+église [church]
+endroit [place, spot (specified area)]
+épicerie [convenience store, grocery store]
+grand magasin [department store]
+hôpital [hospital]
+kiosque [kiosk]
+lieu [place]
+magasin [shop, store]
+maison [house]
+marché [market]
+montagne [mountain]
+musée [museum]
+parc [park]
+piscine [swimming pool]
+place [place, square, plaza, piazza]
+restaurant [restaurant]
+ville [town, city]
+à côté de [next to, besides, alongside]
+dans [in, into]
+derrière [behind]
+devant [in front of, before]
+en [in]
+en face de [opposite, across]
+entre [between]
+loin de [far from]
+par [through]
+près de [near]
+sous [below, under]
+sur [on, upon]
+assez [enough]

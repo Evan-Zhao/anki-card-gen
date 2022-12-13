@@ -1,16 +1,16 @@
-algérien
-allemand
-américain
-anglais
-canadien
-espagnol
-français
-italien
-japonais
-marocain
-martiniquais
-mexicain
-québécois
-sénégalais
-suisse
-vietnamien
+algérien [of Algeria; Algerian]
+allemand [German]
+américain [of America; American]
+anglais [English]
+canadien [Canadian]
+espagnol [Spanish]
+français [French]
+italien [Italian]
+japonais [Japanese]
+marocain [of Morocco; Moroccan]
+martiniquais [Martinican, Martiniquais]
+mexicain [Mexican]
+québécois [of the Québécois people, French Canadian]
+sénégalais [Senegalese]
+suisse [Swiss]
+vietnamien [Vietnamese]

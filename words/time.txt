@@ -1,37 +1,37 @@
-an
-après
-après-demain
-aujourd'hui
-demain
-dernier
-jour
-journée
-lundi
-mardi
-mercredi
-jeudi
-vendredi
-samedi
-dimanche
-matinée
-mois
-premier
-prochain
-soirée
-matin
-soir
-après-midi
-week-end
-année
-nuit
-semaine
-en avance
-en retard
-midi
-minuit
-presque
-tard
-tôt
-vers
-avant-hier
-hier
+an [year]
+après [after]
+après-demain [the day after tomorrow]
+aujourd'hui [today]
+demain [tomorrow]
+dernier [last]
+jour [day]
+journée [day]
+lundi [Monday]
+mardi [Tuesday]
+mercredi [Wednesday]
+jeudi [Thursday]
+vendredi [Friday]
+samedi [Saturday]
+dimanche [Sunday]
+matinée [morning]
+mois [month]
+premier [first]
+prochain [next]
+soirée [evening]
+matin [morning]
+soir [evening]
+après-midi [afternoon]
+week-end [weekend]
+année [year (period)]
+nuit [night]
+semaine [week]
+en avance [in advance]
+en retard [late, overdue]
+midi [noon, midday]
+minuit [midnight]
+presque [almost]
+tard [late]
+tôt [early]
+vers [to]
+avant-hier [the day before yesterday]
+hier [yesterday]

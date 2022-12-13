@@ -1,31 +1,31 @@
-cousin
-demi-frère
-demi-sœur
-enfant
-époux
-famille
-fils
-frère
-grand-mère
-grand-père
-grand-parent
-mari
-mère
-neveu
-nièce
-oiseau
-oncle
-parents
-père
-petit-fils
-petite-fille
-petit-enfant
-sœur
-aîné
-beau-frère
-beau-père
-belle-mère
-belle-sœur
-cadet
-chat
-chien
+cousin [cousin (male)]
+demi-frère [half-brother]
+demi-sœur [half sister]
+enfant [child]
+époux [spouse]
+famille [family]
+fils [son]
+frère [brother]
+grand-mère [grandmother]
+grand-père [grandfather]
+grand-parent [grandparent]
+mari [husband]
+mère [mother]
+neveu [nephew]
+nièce [niece]
+oiseau [bird]
+oncle [uncle]
+parent [parent]
+père [father]
+petit-fils [grandson]
+petite-fille [granddaughter]
+petit-enfant [grandchild]
+sœur [sister]
+aîné [oldest, elder]
+beau-frère [brother-in-law]
+beau-père [a father-in-law, the father of one's spouse]
+belle-mère [mother-in-law]
+belle-sœur [sister-in-law]
+cadet [(family) youngest]
+chat [cat]
+chien [dog]

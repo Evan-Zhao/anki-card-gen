@@ -1,14 +1,14 @@
-bleu
-blond
-brun
-châtain
-marron
-noir
-vert
-jaune
-orange
-rose
-rouge
-violet
-blanc
-gris
+bleu [blue]
+blond [blond]
+brun [brown (the color)]
+châtain [(hair) chestnut-coloured, brown]
+marron [chestnut brown]
+noir [black in colour]
+vert [green]
+jaune [yellow]
+orange [orange (color)]
+rose [pink]
+rouge [red]
+violet [purple (colour)]
+blanc [white color]
+gris [grey, gray]

@@ -1,143 +1,139 @@
-bibliothèque
-bureau
-café
-chose
-différence
-faculté
-instrument
-librairie
-littérature
-lycée
-objet
-ordinateur
-problème
-sociologie
-table
-tableau
-télévision
-université
-acteur
-ami
-chanteur
-étudiant
-personne
-petit ami
-professeur
-livre
-montre
-porte
-résultat
-copain
-élève
-femme
-fille
-garçon
-homme
-bourse
-chimie
-note
-base-ball
-basket-ball
-échecs
-équipe
-football
-football américain
-gagner
-golf
-jeu
-joueur
-joueuse
-loisir
-match
-passe-temps
-spectacle
-sport
-stade
-temps libre
-tennis
-volley-ball
-poisson
-quelque chose
-quelques
-tasse
-verre
-tout
-trop de
-divorce
-étape
-jeunesse
-adolescence
-âge adulte
-enfance
-état civil
-mariage
-mort
-naissance
-vie
-vieillesse
-amitié
-amour
-bonheur
-couple
-ensemble
-fiancé
-fiancée
-jeune marié
-rendez-vous
-bière
-biscuit
-bonbon
-cadeau
-champagne
-dessert
-fête
-gâteau
-glace
-glaçon
-hôte
-hôtesse
-invité
-jour férié
-surprise
-vin
-soldes
-gauche
-facile
-inutile
-surtout
-utile
-vrai
-beau
-bon
-curieux
-fier
-gros
-heureux
-intellectuel
-long
-malheureux
-naïf
-nerveux
-nouveau
-roux
-sérieux
-vieux
-drôle
-faible
-fatigué
-fort
-génial
-lent
-méchant
-modeste
-pénible
-prêt
-rapide
-triste
-travailleur
-plusieurs
-cher
-bon marché
-chaque
-large
-serré
+bibliothèque [library]
+bureau [desk]
+café [coffee]
+chose [thing]
+différence [difference]
+faculté [faculty]
+instrument [instrument]
+librairie [bookshop, bookstore]
+littérature [literature]
+lycée [a public secondary school]
+objet [thing, object]
+ordinateur [computer]
+problème [problem]
+sociologie [sociology]
+table [table]
+tableau [writing board]
+télévision [television]
+université [university]
+acteur [actor]
+ami [friend]
+chanteur [(male) singer]
+étudiant [student]
+personne [person]
+petit ami [boyfriend]
+professeur [teacher]
+livre [book]
+montre [watch, wristwatch]
+porte [door]
+résultat [outcome; result]
+copain [friend]
+élève [(masculine, referring to a boy) schoolboy, pupil, student]
+femme [woman]
+fille [girl]
+garçon [boy]
+homme [man]
+bourse [money]
+chimie [chemistry]
+note [note]
+base-ball [baseball]
+basket-ball [basketball]
+échecs [chess]
+équipe [team]
+football [association football, soccer]
+football américain [(Europe) American football]
+gagner [to win]
+golf [golf]
+jeu [game]
+joueur [player]
+loisir [leisure, hobby]
+match [(sports) match, game]
+passe-temps [hobby; pastime]
+spectacle [a show, a spectacle, a performance, a concert]
+sport [sport]
+stade [stadium (sports arena)]
+temps libre [free time]
+tennis [tennis]
+volley-ball [volleyball]
+poisson [fish]
+quelque [some]
+quelque chose [something]
+tasse [cup]
+tout [all]
+trop de [excessive]
+divorce [divorce]
+étape [stage, stop (on a journey)]
+jeunesse [youth]
+adolescence [adolescence]
+âge adulte [legal adulthood]
+enfance [childhood]
+état civil [civil status, marital status]
+mariage [marriage]
+mort [dead]
+naissance [birth]
+vie [life]
+vieillesse [old age]
+amitié [friendship, amity]
+amour [love]
+bonheur [happiness]
+couple [two partners in a romantic or sexual relationship]
+ensemble [together]
+fiancé [fiancé]
+fiancée [female equivalent of fiancé (“fiancé”); a fiancée]
+jeune marié [newlywed]
+rendez-vous [date]
+bière [beer]
+biscuit [biscuit]
+bonbon [sweet, candy]
+cadeau [present, gift]
+champagne [champagne]
+dessert [dessert, pudding]
+fête [winter holidays]
+gâteau [a sponge cake]
+glace [ice]
+glaçon [icicle]
+hôte [host]
+hôtesse [hostess]
+invité [guest]
+jour férié [bank holiday; public holiday]
+surprise [surprise]
+vin [wine]
+soldes [plural of solde]
+gauche [left]
+facile [easy, simple]
+inutile [useless, unnecessary, pointless]
+surtout [above all]
+utile [useful]
+vrai [true]
+beau [handsome, fine, attractive]
+bon [good]
+curieux [curious, inquisitive, intrigued]
+fier [proud]
+gros [big, thick, fat]
+heureux [happy]
+intellectuel [intellectual]
+long [long]
+malheureux [unhappy, miserable; poor]
+naïf [naive, dewy-eyed; gullible]
+nerveux [nervous]
+nouveau [new, novel]
+roux [ginger (of hair)]
+sérieux [serious]
+vieux [old]
+drôle [funny, amusing]
+faible [weak]
+fatigué [tired]
+fort [strong; powerful]
+génial [great, fantastic, awesome]
+lent [slow]
+méchant [mean, unkind]
+modeste [modest]
+pénible [annoying (about someone)]
+prêt [ready]
+rapide [fast, rapid]
+triste [sad]
+travailleur [hard-working, diligent]
+plusieurs [several, many, a lot]
+cher [expensive]
+bon marché [cheap, inexpensive]
+chaque [each]

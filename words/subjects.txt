@@ -1,28 +1,28 @@
-diplôme
-droit
-économie
-géographie
-gestion
-gymnase
-histoire
-architecture
-école
-informatique
-les lettres
-mathématiques
-philosophie
-physique
-psychologie
-architecte
-artiste
-athlète
-avocat
-coiffeur
-dentiste
-homme d'affaires
-ingénieur
-journaliste
-médecin
-musicien
-art
-biologie
+diplôme [degree (academic award)]
+droit [law]
+économie [economy]
+géographie [geography]
+gestion [administration]
+gymnase [gymnasium]
+histoire [history]
+architecture [architecture]
+école [school]
+informatique [computer science]
+lettres [humanities/arts]
+mathématiques [mathematics]
+philosophie [philosophy]
+physique [physical, sportive]
+psychologie [psychology]
+architecte [architect]
+artiste [artist]
+athlète [athlete]
+avocat [(law) lawyer; attorney]
+coiffeur [hairdresser]
+dentiste [dentist]
+homme d'affaires [a businessman]
+ingénieur [engineer]
+journaliste [a journalist]
+médecin [physician; (medical) doctor]
+musicien [musician]
+art [art]
+biologie [biology]

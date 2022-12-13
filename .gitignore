@@ -3,4 +3,4 @@ Cargo.lock
 .vscode/
 audio/
 anki.txt
-collected.json
+words.json

@@ -1,17 +1,17 @@
-cahier
-calculatrice
-carte
-chaise
-corbeille
-crayon
-dictionnaire
-examen
-fenêtre
-horloge
-sac à dos
-salle de classe
-stylo
-classe
-cours
-devoir
-bande dessinée
+cahier [notebook, exercise book]
+calculatrice [calculator]
+carte [chart; map]
+chaise [chair, seat]
+corbeille [trash can]
+crayon [pencil]
+dictionnaire [dictionary]
+examen [exam, test]
+fenêtre [window]
+horloge [clock]
+sac à dos [rucksack, backpack]
+salle de classe [classroom]
+stylo [pen (for writing)]
+classe [class, type, group]
+cours [course]
+devoir [exercise, assignment]
+bande dessinée [comic book, graphic novel]
