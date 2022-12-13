@@ -12,12 +12,16 @@ use lookup::{
 };
 use regex::Regex;
 
-fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>> {
-    let mut words: HashMap<String, String> = HashMap::new();
+fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, HashMap<String, String>>> {
+    let mut words: HashMap<String, HashMap<String, String>> = HashMap::new();
+    let mut n_words: isize = 0;
     let line_pattern = Regex::new(r"^([^\[]+) \[(.*)+\]$").unwrap();
-    for entry in glob(glob_pattern).expect("Failed to parse glob pattern") {
-        let file_content = fs::read_to_string(entry?)?;
+    for filename in glob(glob_pattern).expect("Failed to parse glob pattern") {
+        let filename = filename?;
+        let file_content = fs::read_to_string(&filename)?;
+        let stem = filename.file_stem().unwrap().to_str().unwrap().to_string();
         let lines = file_content.split("\n").filter(|s| !s.is_empty());
+        let mut inner: HashMap<String, String> = HashMap::new();
         for line in lines {
             let maybe_match = line_pattern.captures_iter(line).next();
             match maybe_match {
@@ -28,7 +32,8 @@ fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>>
                         continue;
                     }
                     let meaning = match_[2].to_string();
-                    words.insert(word, meaning);
+                    inner.insert(word, meaning);
+                    n_words += 1;
                 }
                 None => {
                     println!("Line '{}' is malformed", line);
@@ -36,7 +41,9 @@ fn read_words_from(glob_pattern: &str) -> ResultOrError<HashMap<String, String>>
                 }
             }
         }
+        words.insert(stem, inner);
     }
+    println!("Found {} words", n_words);
     Ok(words)
 }
 
@@ -155,29 +162,25 @@ async fn word_to_anki_fields(
     ])
 }
 
-async fn look_up_all(
-    glob_pattern: &str,
-    anki_f: &str,
-    audio_dir: &str,
-    json_f: &str,
-) -> ResultOrError<()> {
+async fn look_up_all(glob_pattern: &str, audio_dir: &str, json_f: &str) -> ResultOrError<()> {
     let to_look_up = read_words_from(glob_pattern)?;
-    println!("Found {} words", to_look_up.len());
     let mut words = Vec::<Word>::new();
-    let mut out_f = fs::File::create(anki_f)?;
-    for (word_str, meaning) in to_look_up {
-        match wiktionary_lookup(&word_str).await {
-            Ok(word) => {
-                words.push(word.clone());
-                for field in word_to_anki_fields(word, &meaning, audio_dir).await? {
-                    out_f.write(field.as_bytes())?;
-                    out_f.write("\t".as_bytes())?;
+    for (filename, to_look_up_) in to_look_up {
+        let mut out_f = fs::File::create(format!("{filename}.txt"))?;
+        for (word_str, meaning) in to_look_up_ {
+            match wiktionary_lookup(&word_str).await {
+                Ok(word) => {
+                    words.push(word.clone());
+                    for field in word_to_anki_fields(word, &meaning, audio_dir).await? {
+                        out_f.write(field.as_bytes())?;
+                        out_f.write("\t".as_bytes())?;
+                    }
+                    out_f.write("\n".as_bytes())?;
                 }
-                out_f.write("\n".as_bytes())?;
-            }
-            Err(err) => {
-                println!("Failed to look up '{}' due to error '{}'", word_str, err);
-                continue;
+                Err(err) => {
+                    println!("Failed to look up '{}' due to error '{}'", word_str, err);
+                    continue;
+                }
             }
         }
     }
@@ -190,6 +193,6 @@ fn main() {
         .enable_all()
         .build()
         .unwrap();
-    let result = look_up_all("./words/*.txt", "anki.txt", "audio/", "words.json");
+    let result = look_up_all("./words/*.txt", "audio/", "words.json");
     rt.block_on(result).unwrap();
 }
